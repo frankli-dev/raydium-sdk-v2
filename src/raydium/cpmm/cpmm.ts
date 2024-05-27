@@ -458,6 +458,7 @@ export default class CpmmModule extends ModuleBase {
       tokenAccount: mintATokenAcc,
       bypassAssociatedCheck,
       checkCreateATAOwner,
+      programId: poolInfo.mintA.programId ?? TOKEN_PROGRAM_ID,
     });
     txBuilder.addInstruction(mintATokenAccInstruction);
 
@@ -468,6 +469,7 @@ export default class CpmmModule extends ModuleBase {
       tokenAccount: mintBTokenAcc,
       bypassAssociatedCheck,
       checkCreateATAOwner,
+      programId: poolInfo.mintB.programId ?? TOKEN_PROGRAM_ID,
     });
     txBuilder.addInstruction(mintBTokenAccInstruction);
 
