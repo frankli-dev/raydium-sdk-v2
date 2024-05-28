@@ -117,6 +117,7 @@ interface CpmmSwapParams<T = TxVersion.LEGACY> {
     };
     computeBudgetConfig?: ComputeBudgetConfig;
     txVersion?: T;
+    isSell?: boolean;
 }
 interface ComputePairAmountParams {
     poolInfo: ApiV3PoolInfoStandardItemCpmm;

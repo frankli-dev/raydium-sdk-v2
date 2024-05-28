@@ -125,6 +125,7 @@ export interface CpmmSwapParams<T = TxVersion.LEGACY> {
   };
   computeBudgetConfig?: ComputeBudgetConfig;
   txVersion?: T;
+  isSell?: boolean;
 }
 
 export interface ComputePairAmountParams {

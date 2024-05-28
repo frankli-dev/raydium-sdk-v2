@@ -536,6 +536,7 @@ export default class CpmmModule extends ModuleBase {
       config,
       computeBudgetConfig,
       txVersion,
+      isSell = false,
     } = params;
 
     const { bypassAssociatedCheck, checkCreateATAOwner } = {
@@ -547,19 +548,28 @@ export default class CpmmModule extends ModuleBase {
 
     const txBuilder = this.createTxBuilder();
 
-    const [mintA, mintB] = [
-      new PublicKey(poolInfo.mintA.address),
-      new PublicKey(poolInfo.mintB.address),
-    ];
+    const [mintA, mintB] = isSell
+      ? [
+          new PublicKey(poolInfo.mintB.address),
+          new PublicKey(poolInfo.mintA.address),
+        ]
+      : [
+          new PublicKey(poolInfo.mintA.address),
+          new PublicKey(poolInfo.mintB.address),
+        ];
+
+    const [programIdA, programIdB] = isSell
+      ? [poolInfo.mintB.programId, poolInfo.mintA.programId]
+      : [poolInfo.mintA.programId, poolInfo.mintB.programId];
 
     const mintATokenAcc = await this.scope.account.getCreatedTokenAccount({
-      programId: new PublicKey(poolInfo.mintA.programId ?? TOKEN_PROGRAM_ID),
+      programId: new PublicKey(programIdA ?? TOKEN_PROGRAM_ID),
       mint: mintA,
       associatedOnly: false,
     });
 
     const mintBTokenAcc = await this.scope.account.getCreatedTokenAccount({
-      programId: new PublicKey(poolInfo.mintB.programId ?? TOKEN_PROGRAM_ID),
+      programId: new PublicKey(programIdB ?? TOKEN_PROGRAM_ID),
       mint: mintB,
       associatedOnly: false,
     });
@@ -574,7 +584,7 @@ export default class CpmmModule extends ModuleBase {
         tokenAccount: mintATokenAcc,
         bypassAssociatedCheck,
         checkCreateATAOwner,
-        programId: new PublicKey(poolInfo.mintA.programId ?? TOKEN_PROGRAM_ID),
+        programId: new PublicKey(programIdA ?? TOKEN_PROGRAM_ID),
       });
     txBuilder.addInstruction(mintATokenAccInstruction);
 
@@ -588,7 +598,7 @@ export default class CpmmModule extends ModuleBase {
         tokenAccount: mintBTokenAcc,
         bypassAssociatedCheck,
         checkCreateATAOwner,
-        programId: new PublicKey(poolInfo.mintB.programId ?? TOKEN_PROGRAM_ID),
+        programId: new PublicKey(programIdB ?? TOKEN_PROGRAM_ID),
       });
     txBuilder.addInstruction(mintBTokenAccInstruction);
 
@@ -601,6 +611,10 @@ export default class CpmmModule extends ModuleBase {
 
     const poolKeys = await this.getCpmmPoolKeys(poolInfo.id);
 
+    const [vaultA, vaultB] = isSell
+      ? [poolKeys.vault.B, poolKeys.vault.A]
+      : [poolKeys.vault.A, poolKeys.vault.B];
+
     txBuilder.addInstruction({
       instructions: [
         baseIn
@@ -612,10 +626,10 @@ export default class CpmmModule extends ModuleBase {
               new PublicKey(poolInfo.id),
               _mintATokenAcc!,
               _mintBTokenAcc!,
-              new PublicKey(poolKeys.vault.A),
-              new PublicKey(poolKeys.vault.B),
-              new PublicKey(poolInfo.mintA.programId ?? TOKEN_PROGRAM_ID),
-              new PublicKey(poolInfo.mintB.programId ?? TOKEN_PROGRAM_ID),
+              new PublicKey(vaultA),
+              new PublicKey(vaultB),
+              new PublicKey(programIdA ?? TOKEN_PROGRAM_ID),
+              new PublicKey(programIdB ?? TOKEN_PROGRAM_ID),
               mintA,
               mintB,
               getPdaObservationId(
@@ -636,11 +650,11 @@ export default class CpmmModule extends ModuleBase {
               _mintBTokenAcc!,
               _mintATokenAcc!,
 
-              new PublicKey(poolKeys.vault.B),
-              new PublicKey(poolKeys.vault.A),
+              new PublicKey(vaultB),
+              new PublicKey(vaultA),
 
-              new PublicKey(poolInfo.mintB.programId ?? TOKEN_PROGRAM_ID),
-              new PublicKey(poolInfo.mintA.programId ?? TOKEN_PROGRAM_ID),
+              new PublicKey(programIdB ?? TOKEN_PROGRAM_ID),
+              new PublicKey(programIdA ?? TOKEN_PROGRAM_ID),
 
               mintB,
               mintA,
