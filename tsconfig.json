@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+      "target": "ES2015",
+      "module": "CommonJS",
+      "strict": false,
+      "esModuleInterop": true,
+      "sourceMap": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "outDir": "./dist",
+      "baseUrl": "./src",
+      "paths": {
+        "@/common": ["common"],
+        "@/common/*": ["common/*"],
+        "@/api": ["api"],
+        "@/api/*": ["api/*"],
+        "@/raydium": ["raydium"],
+        "@/raydium/*": ["raydium/*"],
+        "@/marshmallow": ["marshmallow"],
+        "@/marshmallow/*": ["marshmallow/*"],
+        "@/module": ["module"],
+        "@/module/*": ["module/*"],
+        "@/solana": ["solana"],
+        "@/solana/*": ["solana/*"],
+      }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}

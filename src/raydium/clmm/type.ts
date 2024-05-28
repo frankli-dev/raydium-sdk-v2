@@ -1,17 +1,29 @@
-import { EpochInfo, Keypair, PublicKey, Signer, Transaction, TransactionInstruction } from "@solana/web3.js";
+import {
+  EpochInfo,
+  Keypair,
+  PublicKey,
+  Signer,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import BN from "bn.js";
 import Decimal from "decimal.js";
 import { TokenAmount, Percent, Price, Fraction } from "@/module";
 import { TokenInfo } from "../token/type";
 import { TickArray } from "./utils/tick";
-import { ApiClmmConfigInfo, ApiV3PoolInfoConcentratedItem, ClmmKeys, ApiV3Token } from "@/api/type";
+import {
+  ApiClmmConfigInfo,
+  ApiV3PoolInfoConcentratedItem,
+  ClmmKeys,
+  ApiV3Token,
+} from "@/api/type";
 import { TxVersion } from "@/common/txTool/txType";
 import { GetTransferAmountFee, TransferAmountFee } from "../type";
 import { ComputeBudgetConfig } from "@/raydium/type";
 
 import { ClmmPositionLayout } from "./layout";
 
-export { ApiClmmConfigInfo };
+// export { ApiClmmConfigInfo };
 
 export interface ApiClmmPoint {
   price: string;
@@ -474,7 +486,8 @@ export interface InitRewardParams<T = TxVersion.LEGACY> {
   txVersion?: T;
 }
 
-export interface InitRewardsParams<T = TxVersion.LEGACY> extends Omit<InitRewardParams<T>, "rewardInfo"> {
+export interface InitRewardsParams<T = TxVersion.LEGACY>
+  extends Omit<InitRewardParams<T>, "rewardInfo"> {
   rewardInfos: {
     mint: ApiV3Token;
     openTime: number;
@@ -503,7 +516,8 @@ export interface SetRewardParams<T = TxVersion.LEGACY> {
   txVersion?: T;
 }
 
-export interface SetRewardsParams<T = TxVersion.LEGACY> extends Omit<SetRewardParams<T>, "rewardInfo"> {
+export interface SetRewardsParams<T = TxVersion.LEGACY>
+  extends Omit<SetRewardParams<T>, "rewardInfo"> {
   rewardInfos: {
     mint: ApiV3Token;
     openTime: number; // If the reward is being distributed, please give 0
@@ -523,7 +537,8 @@ export interface CollectRewardParams {
   checkCreateATAOwner?: boolean;
 }
 
-export interface CollectRewardsParams extends Omit<CollectRewardParams, "rewardMint"> {
+export interface CollectRewardsParams
+  extends Omit<CollectRewardParams, "rewardMint"> {
   rewardMints: PublicKey[];
 }
 

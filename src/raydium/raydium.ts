@@ -1,7 +1,14 @@
 import { Connection, Keypair, PublicKey, EpochInfo } from "@solana/web3.js";
 import { merge } from "lodash";
 
-import { Api, API_URL_CONFIG, ApiV3TokenRes, ApiV3Token, JupTokenType, AvailabilityCheckAPI3 } from "../api";
+import {
+  Api,
+  API_URL_CONFIG,
+  ApiV3TokenRes,
+  ApiV3Token,
+  JupTokenType,
+  AvailabilityCheckAPI3,
+} from "../api";
 import { EMPTY_CONNECTION, EMPTY_OWNER } from "../common/error";
 import { createLogger, Logger } from "../common/logger";
 import { Owner } from "../common/owner";
@@ -20,7 +27,9 @@ import Ido from "./ido";
 import TokenModule from "./token/token";
 import { SignAllTransactions } from "./type";
 
-export interface RaydiumLoadParams extends TokenAccountDataProp, Omit<RaydiumApiBatchRequestParams, "api"> {
+export interface RaydiumLoadParams
+  extends TokenAccountDataProp,
+    Omit<RaydiumApiBatchRequestParams, "api"> {
   /* ================= solana ================= */
   // solana web3 connection
   connection: Connection;
@@ -49,7 +58,8 @@ export interface RaydiumApiBatchRequestParams {
   defaultChainTime?: number;
 }
 
-export type RaydiumConstructorParams = Required<RaydiumLoadParams> & RaydiumApiBatchRequestParams;
+export type RaydiumConstructorParams = Required<RaydiumLoadParams> &
+  RaydiumApiBatchRequestParams;
 
 interface DataBase<T> {
   fetched: number;
@@ -102,7 +112,15 @@ export class Raydium {
   };
 
   constructor(config: RaydiumConstructorParams) {
-    const { connection, cluster, owner, api, defaultChainTime, defaultChainTimeOffset, apiCacheTime } = config;
+    const {
+      connection,
+      cluster,
+      owner,
+      api,
+      defaultChainTime,
+      defaultChainTimeOffset,
+      apiCacheTime,
+    } = config;
 
     this._connection = connection;
     this.cluster = cluster || "mainnet";
@@ -119,13 +137,25 @@ export class Raydium {
       tokenAccounts: config.tokenAccounts,
       tokenAccountRawInfos: config.tokenAccountRawInfos,
     });
-    this.liquidity = new Liquidity({ scope: this, moduleName: "Raydium_LiquidityV2" });
-    this.token = new TokenModule({ scope: this, moduleName: "Raydium_tokenV2" });
+    this.liquidity = new Liquidity({
+      scope: this,
+      moduleName: "Raydium_LiquidityV2",
+    });
+    this.token = new TokenModule({
+      scope: this,
+      moduleName: "Raydium_tokenV2",
+    });
     this.tradeV2 = new TradeV2({ scope: this, moduleName: "Raydium_tradeV2" });
     this.clmm = new Clmm({ scope: this, moduleName: "Raydium_clmm" });
     this.cpmm = new Cpmm({ scope: this, moduleName: "Raydium_cpmm" });
-    this.utils1216 = new Utils1216({ scope: this, moduleName: "Raydium_utils1216" });
-    this.marketV2 = new MarketV2({ scope: this, moduleName: "Raydium_marketV2" });
+    this.utils1216 = new Utils1216({
+      scope: this,
+      moduleName: "Raydium_utils1216",
+    });
+    this.marketV2 = new MarketV2({
+      scope: this,
+      moduleName: "Raydium_marketV2",
+    });
     this.ido = new Ido({ scope: this, moduleName: "Raydium_ido" });
 
     this.availability = {};
@@ -150,12 +180,31 @@ export class Raydium {
         owner: null,
         apiRequestInterval: 5 * 60 * 1000,
         apiRequestTimeout: 10 * 1000,
+        apiCacheTime: 5 * 60 * 1000,
+        signAllTransactions: undefined,
+        urlConfigs: {},
+        logRequests: false,
+        logCount: 10,
+        jupTokenType: JupTokenType.Strict,
+        disableFeatureCheck: false,
+        disableLoadToken: false,
+        tokenAccounts: [],
+        tokenAccountRawInfos: [],
+        defaultChainTimeOffset: undefined,
+        defaultChainTime: undefined,
       },
-      config,
+      config
     );
-    const { cluster, apiRequestTimeout, logCount, logRequests, urlConfigs } = custom;
+    const { cluster, apiRequestTimeout, logCount, logRequests, urlConfigs } =
+      custom;
 
-    const api = new Api({ cluster, timeout: apiRequestTimeout, urlConfigs, logCount, logRequests });
+    const api = new Api({
+      cluster,
+      timeout: apiRequestTimeout,
+      urlConfigs,
+      logCount,
+      logRequests,
+    });
     const raydium = new Raydium({
       ...custom,
       api,
@@ -192,7 +241,9 @@ export class Raydium {
   get signAllTransactions(): SignAllTransactions | undefined {
     return this._signAllTransactions;
   }
-  public setSignAllTransactions(signAllTransactions?: SignAllTransactions): Raydium {
+  public setSignAllTransactions(
+    signAllTransactions?: SignAllTransactions
+  ): Raydium {
     this._signAllTransactions = signAllTransactions;
     return this;
   }
@@ -224,7 +275,11 @@ export class Raydium {
   }
 
   public async fetchV3TokenList(forceUpdate?: boolean): Promise<ApiV3TokenRes> {
-    if (this.apiData.tokenList && !this.isCacheInvalidate(this.apiData.tokenList.fetched) && !forceUpdate)
+    if (
+      this.apiData.tokenList &&
+      !this.isCacheInvalidate(this.apiData.tokenList.fetched) &&
+      !forceUpdate
+    )
       return this.apiData.tokenList.data;
     const raydiumList = await this.api.getTokenList();
     const dataObject = {
@@ -236,9 +291,17 @@ export class Raydium {
     return dataObject.data;
   }
 
-  public async fetchJupTokenList(type: JupTokenType, forceUpdate?: boolean): Promise<ApiV3Token[]> {
+  public async fetchJupTokenList(
+    type: JupTokenType,
+    forceUpdate?: boolean
+  ): Promise<ApiV3Token[]> {
     const prevFetched = this.apiData.jupTokenList?.[type];
-    if (prevFetched && !this.isCacheInvalidate(prevFetched.fetched) && !forceUpdate) return prevFetched.data;
+    if (
+      prevFetched &&
+      !this.isCacheInvalidate(prevFetched.fetched) &&
+      !forceUpdate
+    )
+      return prevFetched.data;
     const jupList = await this.api.getJupTokenList(type);
     this.apiData.jupTokenList = {
       ...this.apiData.jupTokenList,
@@ -256,20 +319,28 @@ export class Raydium {
   }
 
   public async chainTimeOffset(): Promise<number> {
-    if (this._chainTime && Date.now() - this._chainTime.fetched <= 1000 * 60 * 5) return this._chainTime.value.offset;
+    if (
+      this._chainTime &&
+      Date.now() - this._chainTime.fetched <= 1000 * 60 * 5
+    )
+      return this._chainTime.value.offset;
     await this.fetchChainTime();
     return this._chainTime?.value.offset || 0;
   }
 
   public async currentBlockChainTime(): Promise<number> {
-    if (this._chainTime && Date.now() - this._chainTime.fetched <= 1000 * 60 * 5)
+    if (
+      this._chainTime &&
+      Date.now() - this._chainTime.fetched <= 1000 * 60 * 5
+    )
       return this._chainTime.value.chainTime;
     await this.fetchChainTime();
     return this._chainTime?.value.chainTime || Date.now();
   }
 
   public async fetchEpochInfo(): Promise<EpochInfo> {
-    if (this._epochInfo && Date.now() - this._epochInfo.fetched <= 1000 * 30) return this._epochInfo.value;
+    if (this._epochInfo && Date.now() - this._epochInfo.fetched <= 1000 * 30)
+      return this._epochInfo.value;
     this._epochInfo = {
       fetched: Date.now(),
       value: await this.connection.getEpochInfo(),
@@ -277,7 +348,9 @@ export class Raydium {
     return this._epochInfo.value;
   }
 
-  public async fetchAvailabilityStatus(skipCheck?: boolean): Promise<Partial<AvailabilityCheckAPI3>> {
+  public async fetchAvailabilityStatus(
+    skipCheck?: boolean
+  ): Promise<Partial<AvailabilityCheckAPI3>> {
     if (skipCheck) return {};
     try {
       const data = await this.api.fetchAvailabilityStatus();
@@ -285,11 +358,19 @@ export class Raydium {
       this.availability = {
         all: data.all,
         swap: isAllDisabled ? false : data.swap,
-        createConcentratedPosition: isAllDisabled ? false : data.createConcentratedPosition,
-        addConcentratedPosition: isAllDisabled ? false : data.addConcentratedPosition,
+        createConcentratedPosition: isAllDisabled
+          ? false
+          : data.createConcentratedPosition,
+        addConcentratedPosition: isAllDisabled
+          ? false
+          : data.addConcentratedPosition,
         addStandardPosition: isAllDisabled ? false : data.addStandardPosition,
-        removeConcentratedPosition: isAllDisabled ? false : data.removeConcentratedPosition,
-        removeStandardPosition: isAllDisabled ? false : data.removeStandardPosition,
+        removeConcentratedPosition: isAllDisabled
+          ? false
+          : data.removeConcentratedPosition,
+        removeStandardPosition: isAllDisabled
+          ? false
+          : data.removeStandardPosition,
         addFarm: isAllDisabled ? false : data.addFarm,
         removeFarm: isAllDisabled ? false : data.removeFarm,
       };
