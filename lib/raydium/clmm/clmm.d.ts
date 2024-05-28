@@ -2,7 +2,7 @@ import '@solana/web3.js';
 import 'decimal.js';
 import '../../type-7ae06f8f.js';
 import '../../common/txTool/txType.js';
-export { C as Clmm } from '../../raydium-6351c009.js';
+export { C as Clmm } from '../../raydium-bfcfa991.js';
 import '../../type-25785933.js';
 import './layout.js';
 import 'bn.js';

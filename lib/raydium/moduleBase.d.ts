@@ -1,7 +1,7 @@
 import '@solana/web3.js';
 import '../common/logger.js';
 import '../type-7ae06f8f.js';
-export { g as ModuleBaseProps, f as default } from '../raydium-6351c009.js';
+export { g as ModuleBaseProps, f as default } from '../raydium-bfcfa991.js';
 import 'bn.js';
 import '@solana/spl-token';
 import '../solana/type.js';

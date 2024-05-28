@@ -46,7 +46,7 @@ declare class Account extends ModuleBase {
     constructor(params: TokenAccountDataProp & ModuleBaseProps);
     get tokenAccounts(): TokenAccount[];
     get tokenAccountRawInfos(): TokenAccountRaw[];
-    updateTokenAccount({ tokenAccounts, tokenAccountRawInfos }: TokenAccountDataProp): Account;
+    updateTokenAccount({ tokenAccounts, tokenAccountRawInfos, }: TokenAccountDataProp): Account;
     addAccountChangeListener(cbk: (data: TokenAccountDataProp) => void): Account;
     removeAccountChangeListener(cbk: (data: TokenAccountDataProp) => void): Account;
     getAssociatedTokenAccount(mint: PublicKey, programId?: PublicKey): PublicKey;
