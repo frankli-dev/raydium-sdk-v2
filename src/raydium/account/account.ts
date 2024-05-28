@@ -488,7 +488,7 @@ export default class Account extends ModuleBase {
         if (ataInfo === null) {
           instructions.push(_createATAIns);
         } else if (
-          ataInfo.owner.equals(TOKEN_PROGRAM_ID) &&
+          ataInfo.owner.equals(programId) &&
           AccountLayout.decode(ataInfo.data).mint.equals(mint) &&
           AccountLayout.decode(ataInfo.data).owner.equals(
             this.scope.ownerPubKey
@@ -497,7 +497,7 @@ export default class Account extends ModuleBase {
           /* empty */
         } else {
           throw Error(`create ata check error -> mint: ${mint.toString()}, ata: ${ata.toString()}
-          ataInfo.owner: ${ataInfo.owner.toString()}, TOKEN_PROGRAM_ID: ${TOKEN_PROGRAM_ID.toString()},
+          ataInfo.owner: ${ataInfo.owner.toString()}, programId: ${programId.toString()},
           ataInfo.data.mint: ${AccountLayout.decode(
             ataInfo.data
           ).mint.toString()}, mint: ${mint.toString()},
